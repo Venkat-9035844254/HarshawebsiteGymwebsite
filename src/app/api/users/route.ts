@@ -21,7 +21,7 @@ export async function GET() {
 
     const formattedUsers = users.map((u) => ({
       ...u,
-      createdAt: u.createdAt.toISOString(),
+      createdAt: typeof u.createdAt === "string" ? u.createdAt : (u.createdAt as any)?.toISOString ? (u.createdAt as Date).toISOString() : new Date((u.createdAt as any) || Date.now()).toISOString(),
       phone: u.phone || undefined,
       avatar: u.avatar || undefined,
       branchId: u.branchId || undefined,

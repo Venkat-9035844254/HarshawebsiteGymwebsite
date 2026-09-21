@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       phone: user.phone || undefined,
       role: user.role as any,
       avatar: user.avatar || undefined,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: typeof user.createdAt === "string" ? user.createdAt : user.createdAt?.toISOString ? user.createdAt.toISOString() : new Date(user.createdAt || Date.now()).toISOString(),
     };
 
     const response = NextResponse.json({
