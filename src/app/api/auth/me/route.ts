@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
+import { findUserInStore } from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
@@ -32,13 +33,25 @@ export async function GET(req: Request) {
 
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; email: string; role: string };
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: {
-        memberProfile: true,
-        trainerProfile: true,
-      },
-    });
+    let user: any = null;
+    try {
+      user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        include: {
+          memberProfile: true,
+          trainerProfile: true,
+        },
+      });
+    } catch (dbErr) {
+      // Ignore DB error
+    }
+
+    if (!user && decoded.email) {
+      const storeUser = findUserInStore(decoded.email);
+      if (storeUser) {
+        user = storeUser;
+      }
+    }
 
     if (!user) {
       return NextResponse.json({ success: false, user: null }, { status: 401 });

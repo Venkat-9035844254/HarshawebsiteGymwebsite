@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { generateWorkoutPlan } from "@/lib/workoutGenerator";
 import { generateDietPlan } from "@/lib/dietGenerator";
+import { saveUserToStore, findUserInStore } from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
@@ -101,6 +102,10 @@ export async function POST(req: Request) {
       console.warn("[AUTH] Database check warning during registration check:", dbErr);
     }
 
+    if (!existingUser) {
+      existingUser = findUserInStore(normalizedEmail);
+    }
+
     if (existingUser) {
       console.log(`[AUTH] Registration failed: Email ${normalizedEmail} already exists`);
       return NextResponse.json(
@@ -183,9 +188,25 @@ export async function POST(req: Request) {
         memberProfile: fallbackMemberProfile,
         trainerProfile: null,
       };
-    }
-
     const memberProfile = user?.memberProfile || null;
+
+    // Save user record to userStore fallback to ensure login persistence across serverless reloads
+    try {
+      saveUserToStore({
+        id: user.id,
+        email: user.email,
+        passwordHash,
+        name: user.name,
+        phone: user.phone || null,
+        role: user.role,
+        avatar: user.avatar || null,
+        createdAt: typeof user.createdAt === "string" ? user.createdAt : user.createdAt.toISOString(),
+        memberProfile,
+        trainerProfile: user?.trainerProfile || null,
+      });
+    } catch (storeErr) {
+      console.warn("[AUTH] Warning saving to userStore:", storeErr);
+    }
 
     // Generate JWT token
     const token = jwt.sign(

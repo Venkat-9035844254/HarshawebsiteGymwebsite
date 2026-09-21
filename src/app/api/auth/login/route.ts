@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { findUserInStore } from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
@@ -24,13 +25,26 @@ export async function POST(req: Request) {
     const normalizedEmail = email.trim().toLowerCase();
 
     console.log(`[AUTH] Looking up user in database for email: ${normalizedEmail}`);
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-      include: {
-        memberProfile: true,
-        trainerProfile: true,
-      },
-    });
+    let user: any = null;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email: normalizedEmail },
+        include: {
+          memberProfile: true,
+          trainerProfile: true,
+        },
+      });
+    } catch (dbErr) {
+      console.warn("[AUTH] Database lookup warning during login:", dbErr);
+    }
+
+    if (!user) {
+      console.log(`[AUTH] User not found in primary DB, checking userStore for: ${normalizedEmail}`);
+      const storeUser = findUserInStore(normalizedEmail);
+      if (storeUser) {
+        user = storeUser;
+      }
+    }
 
     if (!user) {
       console.log(`[AUTH] Login failed: No user found for email ${normalizedEmail}`);
