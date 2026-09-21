@@ -188,6 +188,8 @@ export async function POST(req: Request) {
         memberProfile: fallbackMemberProfile,
         trainerProfile: null,
       };
+    }
+
     const memberProfile = user?.memberProfile || null;
 
     // Save user record to userStore fallback to ensure login persistence across serverless reloads
