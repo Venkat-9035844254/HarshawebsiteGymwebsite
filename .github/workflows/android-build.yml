@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
+    inputs:
+      server_url:
+        description: 'Live Backend Server URL (e.g. https://fitnessdrive.vercel.app)'
+        required: false
+        default: 'https://fitnessdrive.vercel.app'
 
 jobs:
   build-apk:
@@ -35,12 +40,14 @@ jobs:
 
       - name: Build Next.js Web App
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'file:./dev.db' }}
           JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci_build_jwt_secret_32_chars_long_key_sample' }}
-          NEXT_PUBLIC_APP_URL: "https://fitnessdrive.vercel.app"
+          NEXT_PUBLIC_APP_URL: ${{ github.event.inputs.server_url || 'https://fitnessdrive.vercel.app' }}
         run: npm run build
 
       - name: Sync Capacitor Android
+        env:
+          CAPACITOR_SERVER_URL: ${{ github.event.inputs.server_url || 'https://fitnessdrive.vercel.app' }}
         run: npx cap sync android
 
       - name: Build Debug APK with Gradle
@@ -54,3 +61,4 @@ jobs:
         with:
           name: FitnessDrive-Gym-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+

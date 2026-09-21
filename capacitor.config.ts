@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: "https",
     cleartext: true,
+    ...(process.env.CAPACITOR_SERVER_URL ? { url: process.env.CAPACITOR_SERVER_URL } : {}),
   },
   plugins: {
     SplashScreen: {
@@ -18,3 +19,4 @@ const config: CapacitorConfig = {
 };
 
 export default config;
+

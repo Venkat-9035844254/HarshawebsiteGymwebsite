@@ -25,6 +25,7 @@ interface MealOption {
   fatsGrams: number;
   costInr: number;
   tags: ("VEG" | "EGG" | "NON_VEG")[];
+  goalCategory: "FAT_LOSS" | "MUSCLE_GAIN" | "ANY";
 }
 
 const BREAKFAST_OPTIONS: MealOption[] = [
@@ -38,6 +39,7 @@ const BREAKFAST_OPTIONS: MealOption[] = [
     fatsGrams: 14,
     costInr: 35,
     tags: ["VEG"],
+    goalCategory: "MUSCLE_GAIN",
   },
   {
     name: "High Protein Boiled Eggs & Whole Wheat Toast",
@@ -49,6 +51,19 @@ const BREAKFAST_OPTIONS: MealOption[] = [
     fatsGrams: 16,
     costInr: 32,
     tags: ["EGG"],
+    goalCategory: "ANY",
+  },
+  {
+    name: "Lean Egg White Omelette & Avocado Toast",
+    items: ["Egg Whites (4)", "Whole Wheat Toast (1 Slice)", "Sliced Tomatoes & Spinach", "Black Pepper"],
+    quantity: "4 Egg Whites + 1 Toast",
+    calories: 260,
+    proteinGrams: 26,
+    carbsGrams: 18,
+    fatsGrams: 6,
+    costInr: 28,
+    tags: ["EGG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Paneer & Vegetable Stuffed Paratha",
@@ -60,17 +75,19 @@ const BREAKFAST_OPTIONS: MealOption[] = [
     fatsGrams: 20,
     costInr: 45,
     tags: ["VEG"],
+    goalCategory: "MUSCLE_GAIN",
   },
   {
     name: "South Indian Idli & Sambhar Protein Bowl",
     items: ["Steamed Idli (3)", "Protein Sambhar (1 Bowl)", "Sprouted Moong Salad (50g)"],
     quantity: "3 Idlis + Sprouts",
-    calories: 410,
+    calories: 390,
     proteinGrams: 18,
-    carbsGrams: 72,
-    fatsGrams: 6,
+    carbsGrams: 68,
+    fatsGrams: 5,
     costInr: 30,
     tags: ["VEG"],
+    goalCategory: "FAT_LOSS",
   },
 ];
 
@@ -85,6 +102,7 @@ const MID_MORNING_OPTIONS: MealOption[] = [
     fatsGrams: 3,
     costInr: 18,
     tags: ["VEG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Egg White Bhurji Snack",
@@ -96,6 +114,7 @@ const MID_MORNING_OPTIONS: MealOption[] = [
     fatsGrams: 2,
     costInr: 22,
     tags: ["EGG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Greek Yogurt & Almond Bowl",
@@ -107,6 +126,7 @@ const MID_MORNING_OPTIONS: MealOption[] = [
     fatsGrams: 8,
     costInr: 30,
     tags: ["VEG"],
+    goalCategory: "MUSCLE_GAIN",
   },
 ];
 
@@ -121,39 +141,55 @@ const LUNCH_OPTIONS: MealOption[] = [
     fatsGrams: 12,
     costInr: 65,
     tags: ["NON_VEG"],
+    goalCategory: "MUSCLE_GAIN",
+  },
+  {
+    name: "Lean Chicken Breast Salad with Olive Oil",
+    items: ["Grilled Chicken Breast (180g)", "Cucumber, Tomato & Lettuce Salad", "Olive Oil Dressing (1 tsp)"],
+    quantity: "1 High Protein Salad Bowl",
+    calories: 380,
+    proteinGrams: 52,
+    carbsGrams: 14,
+    fatsGrams: 10,
+    costInr: 70,
+    tags: ["NON_VEG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Protein Rich Soya Chunk & Rice Bowl",
     items: ["Nutri Soya Chunks (60g)", "Jeera Rice (150g)", "Panchratan Dal (1 Bowl)", "Cucumber Salad"],
     quantity: "Full Plate Meal",
-    calories: 610,
+    calories: 580,
     proteinGrams: 42,
-    carbsGrams: 82,
-    fatsGrams: 9,
+    carbsGrams: 78,
+    fatsGrams: 8,
     costInr: 35,
     tags: ["VEG"],
+    goalCategory: "ANY",
   },
   {
-    name: "Egg Curry & Chapati Meal",
-    items: ["Boiled Egg Curry (3 Eggs)", "Whole Wheat Chapati (3)", "Mixed Veg Salad"],
+    name: "Egg Curry & Multigrain Chapati Meal",
+    items: ["Boiled Egg Curry (3 Eggs)", "Multigrain Chapati (3)", "Mixed Veg Salad"],
     quantity: "3 Eggs + 3 Roti",
-    calories: 590,
+    calories: 560,
     proteinGrams: 32,
-    carbsGrams: 64,
-    fatsGrams: 18,
+    carbsGrams: 60,
+    fatsGrams: 16,
     costInr: 40,
     tags: ["EGG"],
+    goalCategory: "ANY",
   },
   {
-    name: "Desi Paneer Bhurji & Multigrain Roti",
+    name: "Desi Paneer Bhurji & Roti",
     items: ["Low-fat Paneer (120g)", "Multigrain Roti (3)", "Yellow Arhar Dal (1 Bowl)", "Curd (100g)"],
     quantity: "Full Plate Meal",
-    calories: 680,
+    calories: 640,
     proteinGrams: 36,
-    carbsGrams: 68,
-    fatsGrams: 22,
+    carbsGrams: 64,
+    fatsGrams: 20,
     costInr: 60,
     tags: ["VEG"],
+    goalCategory: "MUSCLE_GAIN",
   },
 ];
 
@@ -162,81 +198,88 @@ const EVENING_SNACK_OPTIONS: MealOption[] = [
     name: "Sprouted Moong & Peanut Chaat",
     items: ["Steamed Sprouted Moong (80g)", "Roasted Peanuts (25g)", "Lemon & Chaat Masala"],
     quantity: "1 Large Bowl",
-    calories: 260,
+    calories: 240,
     proteinGrams: 15,
-    carbsGrams: 32,
-    fatsGrams: 9,
+    carbsGrams: 30,
+    fatsGrams: 8,
     costInr: 20,
     tags: ["VEG"],
+    goalCategory: "ANY",
   },
   {
     name: "Whey Protein Shake / Buttermilk Bowl",
-    items: ["Whey Protein Isolate (1 Scoop) OR Masala Chaas (300ml)", "Banana (1)"],
+    items: ["Whey Protein Isolate (1 Scoop) OR Masala Chaas (300ml)", "Apple (1)"],
     quantity: "1 Shake + Fruit",
-    calories: 240,
+    calories: 220,
     proteinGrams: 26,
-    carbsGrams: 28,
-    fatsGrams: 3,
+    carbsGrams: 24,
+    fatsGrams: 2,
     costInr: 45,
     tags: ["VEG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Omelette Roll",
     items: ["Whole Eggs (2)", "Roti (1)", "Sliced Capsicum & Onion"],
     quantity: "1 Roll",
-    calories: 310,
+    calories: 300,
     proteinGrams: 18,
-    carbsGrams: 28,
+    carbsGrams: 26,
     fatsGrams: 12,
     costInr: 25,
     tags: ["EGG"],
+    goalCategory: "MUSCLE_GAIN",
   },
 ];
 
 const DINNER_OPTIONS: MealOption[] = [
   {
-    name: "Steamed Fish Curry & Brown Rice / Roti",
-    items: ["White Fish / Rohu Fillet (160g)", "Steamed Rice or 2 Roti", "Sautéed Vegetables"],
+    name: "Steamed Fish Curry & Roti / Vegetables",
+    items: ["White Fish / Rohu Fillet (160g)", "Steamed Rice or 2 Roti", "Sautéed Broccoli & Beans"],
     quantity: "Full Dinner Plate",
-    calories: 520,
+    calories: 480,
     proteinGrams: 42,
-    carbsGrams: 52,
-    fatsGrams: 10,
+    carbsGrams: 46,
+    fatsGrams: 8,
     costInr: 70,
     tags: ["NON_VEG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "High Protein Rajma & Brown Rice",
     items: ["Slow Cooked Rajma (1.5 Bowls)", "Brown Rice (140g)", "Mix Green Salad"],
     quantity: "1 Plate",
-    calories: 550,
+    calories: 540,
     proteinGrams: 26,
-    carbsGrams: 88,
-    fatsGrams: 8,
+    carbsGrams: 84,
+    fatsGrams: 7,
     costInr: 32,
     tags: ["VEG"],
+    goalCategory: "ANY",
   },
   {
-    name: "Tofu / Paneer Tikka & Roti",
-    items: ["Grilled Tofu or Paneer (130g)", "Whole Wheat Roti (2)", "Steamed Broccoli & Carrot"],
+    name: "Grilled Tofu / Paneer Tikka & Sautéed Veggies",
+    items: ["Grilled Tofu or Low-fat Paneer (140g)", "Steamed Broccoli, Bell Peppers & Zucchini", "Mint Chutney"],
     quantity: "Full Plate Meal",
-    calories: 540,
-    proteinGrams: 32,
-    carbsGrams: 48,
-    fatsGrams: 18,
+    calories: 420,
+    proteinGrams: 34,
+    carbsGrams: 24,
+    fatsGrams: 14,
     costInr: 55,
     tags: ["VEG"],
+    goalCategory: "FAT_LOSS",
   },
   {
-    name: "Chicken Soup & Boiled Egg Plate",
-    items: ["Clear Chicken Soup with Veggies (350ml)", "Boiled Eggs (2)", "Toast (1 Slice)"],
+    name: "Clear Chicken Soup & Boiled Egg Plate",
+    items: ["Clear Chicken Soup with Veggies (350ml)", "Boiled Eggs (2)", "Whole Wheat Toast (1)"],
     quantity: "Bowl + Toast",
-    calories: 460,
+    calories: 440,
     proteinGrams: 38,
-    carbsGrams: 26,
-    fatsGrams: 14,
+    carbsGrams: 24,
+    fatsGrams: 12,
     costInr: 50,
     tags: ["NON_VEG"],
+    goalCategory: "FAT_LOSS",
   },
 ];
 
@@ -251,60 +294,73 @@ const POST_WORKOUT_OPTIONS: MealOption[] = [
     fatsGrams: 4,
     costInr: 50,
     tags: ["VEG"],
+    goalCategory: "MUSCLE_GAIN",
   },
   {
     name: "Post-Workout Egg Whites & Fruit Bowl",
     items: ["Boiled Egg Whites (4)", "Fresh Papaya or Watermelon (150g)"],
     quantity: "4 Egg Whites + Fruit",
-    calories: 220,
+    calories: 210,
     proteinGrams: 24,
-    carbsGrams: 22,
+    carbsGrams: 20,
     fatsGrams: 1,
     costInr: 30,
     tags: ["EGG"],
+    goalCategory: "FAT_LOSS",
   },
   {
     name: "Post-Workout Paneer / Tofu & Sprouts Bowl",
     items: ["Low-fat Paneer / Tofu (100g)", "Steamed Moong Sprouts (80g)", "Lemon Juice"],
     quantity: "1 Bowl",
-    calories: 280,
+    calories: 270,
     proteinGrams: 22,
-    carbsGrams: 26,
-    fatsGrams: 10,
+    carbsGrams: 24,
+    fatsGrams: 9,
     costInr: 40,
     tags: ["VEG"],
+    goalCategory: "ANY",
   },
 ];
 
-function filterOptions(options: MealOption[], pref: FoodPreference | string): MealOption[] {
-  const norm = (pref || "").toString().toLowerCase().trim();
+function filterOptions(
+  options: MealOption[],
+  pref: FoodPreference | string,
+  goal: DietGoal | string
+): MealOption[] {
+  const normPref = (pref || "").toString().toLowerCase().trim();
+  const normGoal = (goal || "").toString().toLowerCase().trim();
+  const isFatLossGoal = normGoal.includes("loss") || normGoal.includes("fat") || normGoal.includes("cut");
 
   let allowed: MealOption[] = [];
 
-  if (norm === "vegetarian" || norm === "veg") {
+  // 1. Food preference filter
+  if (normPref === "vegetarian" || normPref === "veg") {
     allowed = options.filter((opt) => opt.tags.includes("VEG"));
-  } else if (norm === "vegetarian + eggs" || norm.includes("egg") || norm === "eggetarian") {
+  } else if (normPref === "vegetarian + eggs" || normPref.includes("egg") || normPref === "eggetarian") {
     allowed = options.filter((opt) => opt.tags.includes("VEG") || opt.tags.includes("EGG"));
   } else {
-    // Non-Vegetarian accepts all options
     allowed = options;
   }
 
-  if (allowed.length > 0) {
-    return allowed;
+  // 2. Goal-specific priority filter
+  if (isFatLossGoal) {
+    const goalMatches = allowed.filter((opt) => opt.goalCategory === "FAT_LOSS" || opt.goalCategory === "ANY");
+    if (goalMatches.length > 0) return goalMatches;
+  } else {
+    const goalMatches = allowed.filter((opt) => opt.goalCategory === "MUSCLE_GAIN" || opt.goalCategory === "ANY");
+    if (goalMatches.length > 0) return goalMatches;
   }
 
-  // Safe fallback if allowed is empty
-  const vegFallback = options.filter((opt) => opt.tags.includes("VEG"));
-  return vegFallback.length > 0 ? vegFallback : options;
+  return allowed.length > 0 ? allowed : options;
 }
 
 function selectMeal(
   options: MealOption[],
   pref: FoodPreference | string,
+  goal: DietGoal | string,
   dayIndex: number
 ): MealOption {
-  const allowed = filterOptions(options, pref);
+  const allowed = filterOptions(options, pref, goal);
   if (allowed.length === 0) return options[0];
   return allowed[dayIndex % allowed.length];
 }
@@ -322,7 +378,7 @@ export function generateDietPlan(
   const gender = (biometrics.gender || "Male").toLowerCase();
   const workoutDays = biometrics.workoutDays || 4;
 
-  // 1. Calculate BMR (Mifflin-St Jeor)
+  // 1. Calculate BMR (Mifflin-St Jeor formula)
   let bmr = 10 * weightKg + 6.25 * heightCm - 5 * age;
   bmr = gender.startsWith("f") ? bmr - 161 : bmr + 5;
 
@@ -335,33 +391,37 @@ export function generateDietPlan(
 
   const tdee = Math.round(bmr * activityMult);
 
-  // 3. Goal Calorie Adjustment
+  // 3. Goal Calorie Target
+  const normGoal = (dietGoal || "").toString().toLowerCase();
   let dailyCalorieTarget = tdee;
-  if (dietGoal === "Weight Loss" || dietGoal === "Fat Loss") {
-    dailyCalorieTarget = Math.round(tdee - 450);
-  } else if (dietGoal === "Weight Gain" || dietGoal === "Muscle Gain") {
-    dailyCalorieTarget = Math.round(tdee + 400);
+  let proteinRatio = 1.8;
+
+  if (normGoal.includes("loss") || normGoal.includes("fat") || normGoal.includes("cut")) {
+    dailyCalorieTarget = Math.max(1300, Math.round(tdee - 500));
+    proteinRatio = 2.2; // 2.2g per kg for fat loss sparing lean muscle
+  } else if (normGoal.includes("gain") || normGoal.includes("muscle") || normGoal.includes("bulk")) {
+    dailyCalorieTarget = Math.round(tdee + 450);
+    proteinRatio = 2.0; // 2.0g per kg for muscle hypertrophy
+  } else {
+    dailyCalorieTarget = tdee;
+    proteinRatio = 1.8;
   }
 
-  // 4. Macro Calculation
-  const dailyProteinTarget = Math.round(weightKg * 1.8); // 1.8g per kg
+  // 4. Macro Targets
+  const dailyProteinTarget = Math.round(weightKg * proteinRatio);
   const dailyFatsTarget = Math.round((dailyCalorieTarget * 0.25) / 9);
-  const dailyCarbsTarget = Math.round((dailyCalorieTarget - dailyProteinTarget * 4 - dailyFatsTarget * 9) / 4);
-
-  // 5. Budget Calculation (Monthly vs Weekly)
-  const monthlyBudget = dietBudgetPeriod === "WEEKLY" ? dietBudget * 4.33 : dietBudget;
-  const targetDailyBudget = Math.max(100, Math.round(monthlyBudget / 30));
+  const dailyCarbsTarget = Math.max(50, Math.round((dailyCalorieTarget - dailyProteinTarget * 4 - dailyFatsTarget * 9) / 4));
 
   const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const weeklyPlan: DietDayPlan[] = [];
 
   for (let i = 0; i < 7; i++) {
-    const bf = selectMeal(BREAKFAST_OPTIONS, foodPreference, i);
-    const mm = selectMeal(MID_MORNING_OPTIONS, foodPreference, i);
-    const lu = selectMeal(LUNCH_OPTIONS, foodPreference, i);
-    const es = selectMeal(EVENING_SNACK_OPTIONS, foodPreference, i);
-    const dn = selectMeal(DINNER_OPTIONS, foodPreference, i);
-    const pw = selectMeal(POST_WORKOUT_OPTIONS, foodPreference, i);
+    const bf = selectMeal(BREAKFAST_OPTIONS, foodPreference, dietGoal, i);
+    const mm = selectMeal(MID_MORNING_OPTIONS, foodPreference, dietGoal, i);
+    const lu = selectMeal(LUNCH_OPTIONS, foodPreference, dietGoal, i);
+    const es = selectMeal(EVENING_SNACK_OPTIONS, foodPreference, dietGoal, i);
+    const dn = selectMeal(DINNER_OPTIONS, foodPreference, dietGoal, i);
+    const pw = selectMeal(POST_WORKOUT_OPTIONS, foodPreference, dietGoal, i);
 
     const unscaledMeals = [
       { mealType: "Breakfast" as const, option: bf },
@@ -382,7 +442,7 @@ export function generateDietPlan(
       const scaledFats = Math.round(option.fatsGrams * scaleFactor);
       const scaledCost = Math.round(option.costInr * scaleFactor);
 
-      // Scale item portions text if numeric values present
+      // Scale item portions text
       const scaledItems = option.items.map((item) => {
         return item.replace(/(\d+)\s*(g|ml|tbsp|tsp|Slices|Eggs?)/gi, (_, numStr, unit) => {
           const num = parseInt(numStr, 10);
@@ -395,7 +455,7 @@ export function generateDietPlan(
         mealType: mealType as any,
         name: option.name,
         items: scaledItems,
-        quantity: `${option.quantity} (Scaled ${Math.round(scaleFactor * 100)}%)`,
+        quantity: `${option.quantity} (Tailored Portion)`,
         calories: scaledCals,
         proteinGrams: scaledProt,
         carbsGrams: scaledCarbs,
@@ -418,7 +478,7 @@ export function generateDietPlan(
     });
   }
 
-  // Generate 30-day monthly rotation plan
+  // Generate 30-day monthly plan
   const monthlyPlan: DietDayPlan[] = [];
   for (let d = 0; d < 30; d++) {
     const dayRef = weeklyPlan[d % 7];
@@ -450,4 +510,3 @@ export function generateDietPlan(
     generatedAt: new Date().toISOString(),
   };
 }
-

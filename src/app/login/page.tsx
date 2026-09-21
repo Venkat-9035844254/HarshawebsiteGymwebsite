@@ -95,7 +95,44 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+        {/* Quick Demo Sign-In Chips */}
+        <div className="pt-2 border-t border-slate-800 space-y-2">
+          <span className="block text-[10px] uppercase font-bold text-slate-500 text-center">Quick Demo Login Presets</span>
+          <div className="grid grid-cols-3 gap-2 text-[10px]">
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("chetan@fitnessdrive.com");
+                setPassword("password123");
+              }}
+              className="px-2 py-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 font-bold transition-all text-center flex items-center justify-center gap-1"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" /> Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("venki@fitnessdrive.com");
+                setPassword("password123");
+              }}
+              className="px-2 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 font-bold transition-all text-center flex items-center justify-center gap-1"
+            >
+              <UserCheck className="w-3.5 h-3.5" /> Trainer
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("rahul@example.com");
+                setPassword("password123");
+              }}
+              className="px-2 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 font-bold transition-all text-center flex items-center justify-center gap-1"
+            >
+              <Dumbbell className="w-3.5 h-3.5" /> Member
+            </button>
+          </div>
+        </div>
+
+        <div className="pt-3 border-t border-slate-800 text-center text-xs text-slate-400">
           Don't have an account yet?{" "}
           <Link href="/signup" className="text-cyan-400 font-bold hover:underline">
             Register Member Account

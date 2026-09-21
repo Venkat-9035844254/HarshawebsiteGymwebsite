@@ -44,7 +44,7 @@ function findExercises(
     const nm = (ex.name || "").toLowerCase();
     const eq = (ex.equipment || "").toLowerCase();
 
-    // 1. Strict muscle group category matching (Prevent Triceps from showing Biceps or vice-versa)
+    // 1. Strict muscle group category matching
     if (isTricepsSearch) {
       if (!pb.includes("triceps") && !nm.includes("tricep") && !nm.includes("skull") && !nm.includes("pushdown") && !nm.includes("dip")) {
         return false;
@@ -85,7 +85,7 @@ function findExercises(
     return true;
   });
 
-  // Fallback if filter is too restrictive: pick strictly from matching muscle group matches, NOT arbitrary INITIAL_EXERCISES
+  // Fallback if filter is too restrictive
   let available = matches.filter((m) => !usedIds.has(m.id));
   if (available.length < count) {
     available = matches.length > 0 ? matches : INITIAL_EXERCISES.filter((ex) => {
@@ -110,22 +110,30 @@ function findExercises(
     defaultSets = experience.includes("beginner") ? 3 : 4;
     defaultReps = "12-15";
     defaultRest = 45;
-    defaultInstructionPrefix = "High-tempo execution with minimal rest to maximize calorie burn and metabolic response.";
+    defaultInstructionPrefix = "High-tempo execution with 45s rest to maximize metabolic calorie burn & heart rate.";
   } else if (normalizedGoal.includes("strength") || normalizedGoal.includes("power")) {
     defaultSets = experience.includes("beginner") ? 3 : 5;
     defaultReps = "5-8";
     defaultRest = 90;
-    defaultInstructionPrefix = "Heavy compound execution. Rest fully between sets and push weight with explosive control.";
+    defaultInstructionPrefix = "Heavy compound movement. Rest 90s fully between sets and push weight with explosive power.";
   } else if (normalizedGoal.includes("endurance") || normalizedGoal.includes("fitness")) {
     defaultSets = 3;
     defaultReps = "12-15";
     defaultRest = 45;
-    defaultInstructionPrefix = "Focus on aerobic conditioning, continuous muscular tension, and high stamina output.";
+    defaultInstructionPrefix = "Focus on aerobic stamina, continuous muscular tension, and high work capacity.";
   }
 
-  // Adjust for limitations if specified
+  // Personalization details
+  const ageStr = params.age ? `${params.age}y/o` : "";
+  const genderStr = params.gender || "";
+  const weightStr = params.weightKg ? `${params.weightKg}kg` : "";
+  const bioSummary = [ageStr, genderStr, weightStr].filter(Boolean).join(" ");
+  if (bioSummary) {
+    defaultInstructionPrefix = `[Personalized for ${bioSummary} - Goal: ${goal}] ${defaultInstructionPrefix}`;
+  }
+
   if (limitationsStr.trim()) {
-    defaultInstructionPrefix += ` Note: Tailored for safety given notes: "${params.limitations}".`;
+    defaultInstructionPrefix += ` Safety Notice: Adjusted for "${params.limitations}".`;
   }
 
   return selected.map((ex) => {
@@ -164,101 +172,96 @@ export function generateWorkoutPlan(
   const daysCount = [3, 4, 5, 6].includes(workoutDaysCount) ? workoutDaysCount : 4;
   const goal = params.fitnessGoal || params.dietGoal || "Muscle Gain";
   const equipment = params.equipment ? ` (${params.equipment})` : "";
+  const isFatLoss = goal.toLowerCase().includes("loss") || goal.toLowerCase().includes("fat") || goal.toLowerCase().includes("hiit");
+  const isStrength = goal.toLowerCase().includes("strength") || goal.toLowerCase().includes("power");
+
   let splitTitle = "";
 
   if (daysCount === 6) {
-    splitTitle = `6-Day Push/Pull/Legs ${goal} Split${equipment}`;
+    splitTitle = isFatLoss
+      ? `6-Day High-Intensity Fat Shred Circuit${equipment}`
+      : isStrength
+      ? `6-Day Heavy Strength & Powerlifting Split${equipment}`
+      : `6-Day Push/Pull/Legs Hypertrophy Split${equipment}`;
+
     const usedMon = new Set<string>();
     const usedTue = new Set<string>();
     const usedWed = new Set<string>();
 
-    // Mon: Chest 4 + Triceps 4 = 8
-    const monExercises = [
-      ...findExercises(["chest"], 4, usedMon, params),
-      ...findExercises(["tricep"], 4, usedMon, params),
-    ];
     days.push({
       dayName: "Monday",
       dayNumber: 1,
-      title: "Chest + Triceps Hypertrophy",
+      title: isFatLoss ? "Chest + Triceps Fat Burn Circuit" : isStrength ? "Heavy Bench & Push Strength" : "Chest + Triceps Hypertrophy",
       muscleGroups: ["Chest", "Triceps"],
-      exercises: monExercises,
+      exercises: [
+        ...findExercises(["chest"], 4, usedMon, params),
+        ...findExercises(["tricep"], 4, usedMon, params),
+      ],
       isRestDay: false,
     });
 
-    // Tue: Back 4 + Biceps 4 = 8
-    const tueExercises = [
-      ...findExercises(["back", "lats"], 4, usedTue, params),
-      ...findExercises(["bicep"], 4, usedTue, params),
-    ];
     days.push({
       dayName: "Tuesday",
       dayNumber: 2,
-      title: "Back + Biceps Density",
+      title: isFatLoss ? "Back + Biceps Calorie Torch" : isStrength ? "Heavy Deadlift & Pull Density" : "Back + Biceps Density",
       muscleGroups: ["Back", "Biceps"],
-      exercises: tueExercises,
+      exercises: [
+        ...findExercises(["back", "lats"], 4, usedTue, params),
+        ...findExercises(["bicep"], 4, usedTue, params),
+      ],
       isRestDay: false,
     });
 
-    // Wed: Legs 3 + Shoulders 3 + Abs 3 = 9
-    const wedExercises = [
-      ...findExercises(["leg", "quad", "hamstring", "calf"], 3, usedWed, params),
-      ...findExercises(["shoulder", "deltoid"], 3, usedWed, params),
-      ...findExercises(["ab", "core"], 3, usedWed, params),
-    ];
     days.push({
       dayName: "Wednesday",
       dayNumber: 3,
-      title: "Legs + Shoulders + Core",
+      title: isFatLoss ? "Legs + Shoulders + Abs Shred" : isStrength ? "Squat Power & Core Stability" : "Legs + Shoulders + Core",
       muscleGroups: ["Legs", "Shoulders", "Abs"],
-      exercises: wedExercises,
+      exercises: [
+        ...findExercises(["leg", "quad", "hamstring", "calf"], 3, usedWed, params),
+        ...findExercises(["shoulder", "deltoid"], 3, usedWed, params),
+        ...findExercises(["ab", "core"], 3, usedWed, params),
+      ],
       isRestDay: false,
     });
 
-    // Thu: Chest 4 + Triceps 4 = 8
-    const thuExercises = [
-      ...findExercises(["chest"], 4, new Set(), params),
-      ...findExercises(["tricep"], 4, new Set(), params),
-    ];
     days.push({
       dayName: "Thursday",
       dayNumber: 4,
-      title: "Upper Body Push Focus",
+      title: isFatLoss ? "Upper Body High Tempo Push" : isStrength ? "Overhead Press & Push Power" : "Upper Body Push Focus",
       muscleGroups: ["Chest", "Triceps"],
-      exercises: thuExercises,
+      exercises: [
+        ...findExercises(["chest"], 4, new Set(), params),
+        ...findExercises(["tricep"], 4, new Set(), params),
+      ],
       isRestDay: false,
     });
 
-    // Fri: Back 4 + Biceps 4 = 8
-    const friExercises = [
-      ...findExercises(["back", "lats"], 4, new Set(), params),
-      ...findExercises(["bicep"], 4, new Set(), params),
-    ];
     days.push({
       dayName: "Friday",
       dayNumber: 5,
-      title: "Upper Body Pull Focus",
+      title: isFatLoss ? "Upper Body Pull & Core Torch" : isStrength ? "Rowing & Lat Heavy Power" : "Upper Body Pull Focus",
       muscleGroups: ["Back", "Biceps"],
-      exercises: friExercises,
+      exercises: [
+        ...findExercises(["back", "lats"], 4, new Set(), params),
+        ...findExercises(["bicep"], 4, new Set(), params),
+      ],
       isRestDay: false,
     });
 
-    // Sat: Legs 3 + Shoulders 3 + Abs 3 = 9
-    const satExercises = [
-      ...findExercises(["leg", "quad", "hamstring", "calf"], 3, new Set(), params),
-      ...findExercises(["shoulder", "deltoid"], 3, new Set(), params),
-      ...findExercises(["ab", "core"], 3, new Set(), params),
-    ];
     days.push({
       dayName: "Saturday",
       dayNumber: 6,
-      title: "Lower Body + Delts Conditioning",
+      title: isFatLoss ? "Metabolic Full Body Burn" : isStrength ? "Lower Body Heavy Power" : "Lower Body + Delts Conditioning",
       muscleGroups: ["Legs", "Shoulders", "Abs"],
-      exercises: satExercises,
+      exercises: [
+        ...findExercises(["leg", "quad", "hamstring", "calf"], 3, new Set(), params),
+        ...findExercises(["shoulder", "deltoid"], 3, new Set(), params),
+        ...findExercises(["ab", "core"], 3, new Set(), params),
+      ],
       isRestDay: false,
     });
 
-    // Sun: Rest
     days.push({
       dayName: "Sunday",
       dayNumber: 7,
@@ -268,13 +271,17 @@ export function generateWorkoutPlan(
       isRestDay: true,
     });
   } else if (daysCount === 5) {
-    splitTitle = `5-Day Advanced ${goal} Split${equipment}`;
-    const usedMon = new Set<string>();
+    splitTitle = isFatLoss
+      ? `5-Day Fat Loss & Calorie Burn Split${equipment}`
+      : isStrength
+      ? `5-Day Compound Strength & Power Split${equipment}`
+      : `5-Day Advanced Hypertrophy Split${equipment}`;
 
+    const usedMon = new Set<string>();
     days.push({
       dayName: "Monday",
       dayNumber: 1,
-      title: "Chest + Triceps Power",
+      title: isFatLoss ? "Chest + Triceps Fat Torch" : isStrength ? "Heavy Chest Press Power" : "Chest + Triceps Power",
       muscleGroups: ["Chest", "Triceps"],
       exercises: [
         ...findExercises(["chest"], 4, usedMon, params),
@@ -287,7 +294,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Tuesday",
       dayNumber: 2,
-      title: "Back + Biceps Thickness",
+      title: isFatLoss ? "Back + Biceps Calorie Burn" : isStrength ? "Heavy Back & Pull Strength" : "Back + Biceps Thickness",
       muscleGroups: ["Back", "Biceps"],
       exercises: [
         ...findExercises(["back", "lats"], 4, usedTue, params),
@@ -300,7 +307,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Wednesday",
       dayNumber: 3,
-      title: "Legs + Shoulders + Abs",
+      title: isFatLoss ? "Legs + Delts Metabolic Conditioning" : isStrength ? "Squat & Lower Body Power" : "Legs + Shoulders + Abs",
       muscleGroups: ["Legs", "Shoulders", "Abs"],
       exercises: [
         ...findExercises(["leg", "quad", "hamstring"], 3, usedWed, params),
@@ -314,7 +321,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Thursday",
       dayNumber: 4,
-      title: "Arms & Forearms Specialization",
+      title: isFatLoss ? "Arm & Core High Tempo Circuit" : isStrength ? "Arm Strength & Stability" : "Arms & Forearms Specialization",
       muscleGroups: ["Triceps", "Biceps", "Forearms"],
       exercises: [
         ...findExercises(["tricep"], 3, usedThu, params),
@@ -328,7 +335,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Friday",
       dayNumber: 5,
-      title: "Full Body Conditioning & Core",
+      title: isFatLoss ? "Full Body Calorie Torch & Abs" : isStrength ? "Full Body Heavy Compound Finish" : "Full Body Conditioning & Core",
       muscleGroups: ["Chest", "Back", "Core", "Full Body"],
       exercises: [
         ...findExercises(["chest"], 2, usedFri, params),
@@ -339,30 +346,20 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Saturday",
-      dayNumber: 6,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
-    days.push({
-      dayName: "Sunday",
-      dayNumber: 7,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Saturday", dayNumber: 6, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
+    days.push({ dayName: "Sunday", dayNumber: 7, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
   } else if (daysCount === 4) {
-    splitTitle = `4-Day ${goal} Split${equipment}`;
-    const usedMon = new Set<string>();
+    splitTitle = isFatLoss
+      ? `4-Day Fat Shred & Metabolic Circuit Split${equipment}`
+      : isStrength
+      ? `4-Day Heavy Compound Strength Split${equipment}`
+      : `4-Day Muscle Gain & Hypertrophy Split${equipment}`;
 
+    const usedMon = new Set<string>();
     days.push({
       dayName: "Monday",
       dayNumber: 1,
-      title: "Chest + Triceps Focus",
+      title: isFatLoss ? "Chest & Triceps Calorie Torch" : isStrength ? "Heavy Bench & Push Focus" : "Chest + Triceps Focus",
       muscleGroups: ["Chest", "Triceps"],
       exercises: [
         ...findExercises(["chest"], 4, usedMon, params),
@@ -375,7 +372,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Tuesday",
       dayNumber: 2,
-      title: "Back + Biceps Focus",
+      title: isFatLoss ? "Back & Biceps Fat Burn" : isStrength ? "Heavy Pull & Lats Density" : "Back + Biceps Focus",
       muscleGroups: ["Back", "Biceps"],
       exercises: [
         ...findExercises(["back", "lats"], 4, usedTue, params),
@@ -384,20 +381,13 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Wednesday",
-      dayNumber: 3,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Wednesday", dayNumber: 3, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
 
     const usedThu = new Set<string>();
     days.push({
       dayName: "Thursday",
       dayNumber: 4,
-      title: "Legs + Shoulders + Abs",
+      title: isFatLoss ? "Legs & Shoulders HIIT Circuit" : isStrength ? "Squat & Shoulder Overhead Power" : "Legs + Shoulders + Abs",
       muscleGroups: ["Legs", "Shoulders", "Abs"],
       exercises: [
         ...findExercises(["leg", "quad", "hamstring"], 3, usedThu, params),
@@ -411,7 +401,7 @@ export function generateWorkoutPlan(
     days.push({
       dayName: "Friday",
       dayNumber: 5,
-      title: "Arms & Core Conditioning",
+      title: isFatLoss ? "Full Body Shred & Core Blast" : isStrength ? "Arm & Core Strength Finish" : "Arms & Core Conditioning",
       muscleGroups: ["Triceps", "Biceps", "Abs"],
       exercises: [
         ...findExercises(["tricep"], 3, usedFri, params),
@@ -421,31 +411,21 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Saturday",
-      dayNumber: 6,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
-    days.push({
-      dayName: "Sunday",
-      dayNumber: 7,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Saturday", dayNumber: 6, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
+    days.push({ dayName: "Sunday", dayNumber: 7, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
   } else {
-    // 3 Days Split
-    splitTitle = `3-Day ${goal} Foundation Split${equipment}`;
+    // 3-Day Split
+    splitTitle = isFatLoss
+      ? `3-Day Full Body Fat-Loss Foundation Split${equipment}`
+      : isStrength
+      ? `3-Day Heavy Power & Compound Foundation Split${equipment}`
+      : `3-Day Muscle Building Foundation Split${equipment}`;
 
     const usedMon = new Set<string>();
     days.push({
       dayName: "Monday",
       dayNumber: 1,
-      title: "Chest + Triceps Routine",
+      title: isFatLoss ? "Full Body Push & Cardio Circuit" : "Chest + Triceps Routine",
       muscleGroups: ["Chest", "Triceps"],
       exercises: [
         ...findExercises(["chest"], 4, usedMon, params),
@@ -454,20 +434,13 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Tuesday",
-      dayNumber: 2,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Tuesday", dayNumber: 2, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
 
     const usedWed = new Set<string>();
     days.push({
       dayName: "Wednesday",
       dayNumber: 3,
-      title: "Back + Biceps Routine",
+      title: isFatLoss ? "Full Body Pull & Core Torch" : "Back + Biceps Routine",
       muscleGroups: ["Back", "Biceps"],
       exercises: [
         ...findExercises(["back", "lats"], 4, usedWed, params),
@@ -476,20 +449,13 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Thursday",
-      dayNumber: 4,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Thursday", dayNumber: 4, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
 
     const usedFri = new Set<string>();
     days.push({
       dayName: "Friday",
       dayNumber: 5,
-      title: "Legs + Shoulders + Abs",
+      title: isFatLoss ? "Lower Body & Metabolic HIIT" : "Legs + Shoulders + Abs",
       muscleGroups: ["Legs", "Shoulders", "Abs"],
       exercises: [
         ...findExercises(["leg", "quad", "hamstring"], 3, usedFri, params),
@@ -499,22 +465,8 @@ export function generateWorkoutPlan(
       isRestDay: false,
     });
 
-    days.push({
-      dayName: "Saturday",
-      dayNumber: 6,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
-    days.push({
-      dayName: "Sunday",
-      dayNumber: 7,
-      title: "REST DAY",
-      muscleGroups: ["Recovery"],
-      exercises: [],
-      isRestDay: true,
-    });
+    days.push({ dayName: "Saturday", dayNumber: 6, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
+    days.push({ dayName: "Sunday", dayNumber: 7, title: "REST DAY", muscleGroups: ["Recovery"], exercises: [], isRestDay: true });
   }
 
   return {
